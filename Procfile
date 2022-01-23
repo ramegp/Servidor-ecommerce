@@ -1,1 +1,1 @@
-web: ./node_modules/.bin/tsc --module commonjs --allowJs --outDir build/ --sourceMap --target es6 main.ts && node build/main.js
+web:ts-node /src/main.ts
