@@ -1,1 +1,1 @@
-web: npx ts-node src/main.ts
+web: node build/main.js
