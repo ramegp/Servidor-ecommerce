@@ -11,7 +11,12 @@ const Mongoose = __importStar(require("mongoose"));
 const users_statics_1 = require("./users.statics");
 const UserSessionSchema = new Mongoose.Schema({
     user: String,
-    pass: String
+    pass: String,
+    name: String,
+    address: String,
+    age: String,
+    phone: String,
+    avatar: String
 });
 UserSessionSchema.statics.findAll = users_statics_1.findAll;
 exports.default = UserSessionSchema;

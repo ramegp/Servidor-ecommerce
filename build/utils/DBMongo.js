@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+let instance_class_mongodb = null;
 class DBMongo {
     constructor() {
         this.prod_connect = require('../database/db-products').connect;
@@ -8,7 +9,7 @@ class DBMongo {
         this.msg_disconnect = require('../database/db-messages').disconnect;
         this.users_connect = require('../database/db-users').connect;
         this.users_disconnect = require('../database/db-users').disconnect;
-        this.imprimir = async () => {
+        this.getAllProducts = async () => {
             let db = this.prod_connect();
             let productos = await db?.UserModel.find();
             //console.log(productos);
@@ -45,7 +46,7 @@ class DBMongo {
                 return {};
             }
         };
-        this.findByStock = async (stock_max, stock_min) => {
+        this.findByStock = async (stock_max, stock_min = 0) => {
             //Pasamos primero el precio mayor 
             if (stock_min <= stock_max) {
                 let db = this.prod_connect();
@@ -96,6 +97,7 @@ class DBMongo {
             this.prod_disconnect();
             return prod_saved;
         };
+        /* Menssages */
         this.showMessages = async () => {
             let db = this.msg_connect();
             let messages = await db?.MessagesModel.find();
@@ -105,7 +107,7 @@ class DBMongo {
         };
         this.showMessagesById = async (id) => {
             let db = this.msg_connect();
-            let message = await db?.MessagesModel.find({ _id: id });
+            let message = await db?.MessagesModel.find({ 'author.id': id });
             this.msg_disconnect();
             return message;
         };
@@ -183,6 +185,12 @@ class DBMongo {
             this.users_disconnect();
             return {};
         };
+    }
+    static getInstanceClassMongoDB() {
+        if (!instance_class_mongodb) {
+            instance_class_mongodb = new DBMongo();
+        }
+        return instance_class_mongodb;
     }
 }
 exports.DBMongo = DBMongo;

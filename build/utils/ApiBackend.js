@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const SalaChat_1 = require("./SalaChat");
 const logHandler_1 = require("../helpers/logHandler");
+const express_graphql_1 = require("express-graphql");
+const graphql_1 = require("../graphql/graphql");
+const DBMongo_1 = require("./DBMongo");
 class ApiBackend {
     constructor(port, modo_servidor) {
         //Servidor modo cluster
@@ -30,6 +33,11 @@ class ApiBackend {
         //middlewate de
         this.compression = require('compression');
         this.inicializar = (port) => {
+            this.app.use('/graphql', express_graphql_1.graphqlHTTP({
+                schema: graphql_1.schema,
+                rootValue: graphql_1.root,
+                graphiql: true
+            }));
             var env = require('node-env-file'); // .env file
             env(__dirname + '/../../.env');
             this.port = port;
@@ -94,21 +102,39 @@ class ApiBackend {
         };
         this.configConexionReact = (socket) => {
             //conexion con el front
-            socket.on('msj-user', (data) => {
-                this.msjSalaFront.push(data);
-                this.io.emit('mensajes', this.msjSalaFront);
+            let db = new DBMongo_1.DBMongo();
+            let enviar_todos_los_msj = () => {
+                db.showMessages().then((data) => {
+                    this.io.emit('Todos-los-mensajes', data);
+                });
+            };
+            let buscar_msj_del_usuario = (email) => {
+                db.showMessagesById(email).then((data) => {
+                    socket.emit('Respuesta-mensajes-del-usuario', data);
+                });
+            };
+            socket.on('Quiero-todos-los-mensajes', (data) => {
+                enviar_todos_los_msj();
             });
-            socket.on('usuario-conectado', (data) => {
+            socket.on('Mensajes-del-usuario', (data) => {
+                buscar_msj_del_usuario(data);
+            });
+            socket.on('msj-user', (data) => {
+                db.addMessage(data);
+                enviar_todos_los_msj();
+            });
+            /* ------ */
+            /* socket.on('usuario-conectado', (data: any) => {
                 let obj = {
                     id: socket.id,
                     user: data
-                };
-                this.userConected.push(obj);
-                this.io.emit('usuarios-conectados', this.userConected);
-                console.log(`Conectados ${this.userConected.length}`);
-            });
+                }
+                this.userConected.push(obj)
+                this.io.emit('usuarios-conectados', this.userConected)
+                console.log(`Conectados ${this.userConected.length}`)
+            })
             this.io.emit('usuarios-conectados', this.userConected);
-            this.io.emit('mensajes', this.msjSalaFront);
+            this.io.emit('mensajes', this.msjSalaFront); */
         };
         if (modo_servidor?.toLowerCase() == 'cluster') {
             /* MASTER */
