@@ -5,7 +5,7 @@
   "main": "src/main.js",
   "scripts": {
     "test": "npx mocha --timeout 10000 src/test/ApiTest.ts ",
-    "start": "npx ts-node src/main.ts",
+    "start": "node build/main.js",
     "dev": "nodemon --quiet src/main.ts",
     "deploy": " git add . && git commit -m 'Subido desde node' && git push"
     
