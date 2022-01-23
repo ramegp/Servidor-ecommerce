@@ -8,7 +8,6 @@
     "s": "npx ts-node src/main.ts",
     "dev": "nodemon --quiet src/main.ts",
     "deploy": " git add . && git commit -m 'Subido desde node' && git push",
-    "postinstall": "tsc",
     "start": "node build/main.js"
     
   },
