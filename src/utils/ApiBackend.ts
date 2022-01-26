@@ -10,6 +10,7 @@ import { graphqlHTTP } from "express-graphql";
 
 import {root as graphqlRoot, schema as graphSchema} from '../graphql/graphql'
 import { DBMongo } from "./DBMongo";
+import { config } from "../config";
 
 
 export class ApiBackend {
@@ -95,11 +96,14 @@ export class ApiBackend {
 
     
     inicializar = (port:number) => {
-        this.app.use('/graphql', graphqlHTTP({
-            schema: graphSchema,
-            rootValue: graphqlRoot,
-            graphiql: true
-        }));
+        if(config.GRAPHIQL == 'true'){
+
+            this.app.use('/graphql', graphqlHTTP({
+                schema: graphSchema,
+                rootValue: graphqlRoot,
+                graphiql: true
+            }));
+        }
         
         var env = require('node-env-file'); // .env file
         env(__dirname + '/../../.env');

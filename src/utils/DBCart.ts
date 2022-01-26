@@ -83,8 +83,24 @@ export class DBCart {
             $set: {
                 finalizo : true
             }})
+        console.log("Base de dato carrito compra todo ok");
+        
         this.cart_disconnect()
         return user_cart
+    }
+
+    borrarProductoCartUser =async (email:String,prod_to_add:any) => {
+        let db = this.cart_connect();
+        
+        let user_cart_update = await db?.CarritoModel.updateOne({$and:[{titular:email},{finalizo:false}]},{$pull:{productos:{title:{$eq:prod_to_add}}}})
+        let devolver = {eliminado:true}
+        if (user_cart_update.nModified == 0) {
+            devolver.eliminado=false
+        }
+        
+        
+        this.cart_disconnect()
+        return devolver
     }
     /* addProdCartUser = () => {
         let db = this.cart_connect();

@@ -1,29 +1,123 @@
 # ApiRest-backend
 
-ejecutar:
 
-`npm run dev`
+# En el archivo development.env
+en TIPO_PERSISTENCIA podemos elegir entre `file o mongo`
+en MODO_SERVER podemos elegir iniciar el serivor en modo `fork o cluster`
+```
+NODE_ENV=development
+HOST=127.0.0.1
+PORT=8080
+TIPO_PERSISTENCIA=file
+GRAPHIQL=true
+mongoAtlasUser=<usuario mongo atlas>
+mongoAtlasPassword=<Password del usuario de mongo>
+MODO_SERVER=fork
+```
 
-en el archivo .env configurar el telefono al que llegaron las notificaciones
+# En el archivo production.env
+en TIPO_PERSISTENCIA podemos elegir entre `file o mongo`
+en MODO_SERVER podemos elegir iniciar el serivor en modo `fork o cluster`
+
+```
+NODE_ENV=production
+HOST=localhost
+PORT=9000
+TIPO_PERSISTENCIA=mongo
+GRAPHIQL=false
+mongoAtlasUser=<usuario mongo atlas>
+mongoAtlasPassword=<Password del usuario de mongo>
+MODO_SERVER=cluster
+```
+
+
+
 en el archivo src/config.ts configurar 
 ```
+/* 
+    Credenciales del email del administrador
+    en gmail marcar como aplicaciones no seguras para poder enviar los emails
+*/
 export const credencialesEmail = {
-    user:"<email desde el cual se envian los mails>",
-    pass:"<password>"
+    user:"email",
+    pass:"password"
 }
+
+/* 
+    Credenciales de twilio
+*/
 
 export const credencialesTwilio = {
-    accountSid : '<credenciales de twilio>',
-    authToken : '<token twilio>',
-    number:'<phone que nos da twilio>'
+    accountSid : '',
+    authToken : '',
+    number:'+'
+}    
+/* 
+    telefono del administrador
+*/
+export const administrador = {
+    phone:"cellphone",
+    email:"email"
+}    
+
+
+dotenv.config({
+    path: path.resolve(__dirname,'../' +process.env.NODE_ENV +'.env')
+})
+
+export const config = {
+    NODE_ENV :process.env.NODE_ENV || 'development',
+    HOST : process.env.HOST || '127.0.0.1',
+    //@ts-ignore
+    PORT: parseInt(process.env.PORT) || 8080,
+    MODO_SERVER:process.env.MODO_SERVER || 'fork',
+    GRAPHIQL:process.env.GRAPHIQL || true
 }
 
-export const administrador = {
-    phone:"<phone del administrador para que nos lleguen las notificaciones>",
-    email:"<email del administrador para que nos lleguen las notificaciones>"
-}
 ```
-en la ruta localhost:8080/sing/up enviar un objeto 
+
+# Una vez configurado:
+
+podemos ejecutar en el entorno desarrollo con:
+
+`npm run start:dev`
+
+o en el entorno produccion
+
+`npm run start:prod`
+
+# Servidor subido a heroku
+```
+Link a heroku
+```
+
+# Front que se conecta con el front subido a netlify
+```
+Link
+```
+
+# Rutas
+## /products
+en la carpeta src/routes se encuentran los end points
+en la carpeta src/controlRoutes se encuentran los manejadores 
+
+## /messages
+en la carpeta src/routes se encuentran los end points
+en la carpeta src/controlRoutes se encuentran los manejadores 
+
+## /cart
+en la carpeta src/routes se encuentran los end points
+en la carpeta src/controlRoutes se encuentran los manejadores 
+
+## /products
+en la carpeta src/routes se encuentran los end points
+en la carpeta src/controlRoutes se encuentran los manejadores 
+
+## /sing
+en la carpeta src/routes se encuentran los end points
+en la carpeta src/controlRoutes se encuentran los manejadores 
+
+### En la ruta localhost:8080/sing/up enviar un objeto 
 ```
 {
     "username":"ramegp@gmail.com",
@@ -37,13 +131,13 @@ en la ruta localhost:8080/sing/up enviar un objeto
 ```
 Nos envia un email para validar el email, continuar los pasos del email.
 
-en la ruta localhost:8080/sing/in enviar un objeto
+### En la ruta localhost:8080/sing/in enviar un objeto
 ``` 
 {username:"email",password:"contraseña"} 
 ```
 Una vez iniciado sesion nos envia un email con el dia que se inicio sesion y nos envia un sms
 
-podemos usar el graphql para agregar productos y listarlos
+### Podemos usar el graphql para agregar productos y listarlos
 ```
 Para agregar dirigirse a localhost:8080/graphql y escribir:
 
@@ -108,7 +202,7 @@ Listar todos los productos
   _v
 }}
 ```
-Test: en la carpeta `src/test/ApiTest.ts`
+### Test: en la carpeta `src/test/ApiTest.ts`
 ```
 Descomentar la prueba de testing post y cambiarle los datos al producto
 
@@ -130,15 +224,8 @@ Utilizamos el middleware de compresion de node para la compresion de gzip en la 
 
 Utilizamos com logger log4js
 
-
-Para ejecutar la factory con diferente sistema de persistencia hacer 
-```
-npm run dev <File o Mongo>
-```
-
 Si queremos comprobar que tenemos un solo singleton en la factory ejecutar el archivo src/utils/ProbandoClases.ts `npx ts-node src/utils/ProbandoClases.ts`
 
 
-
-###Front
+### Front
 Si queremos probar el carrito debemos loguearnos para poder agregar los productos al carrito de otra forma solo podriamos verlos.

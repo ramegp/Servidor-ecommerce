@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const notificacion_1 = require("../helpers/notificacion");
+const emailHandler_1 = require("../helpers/emailHandler");
 const DBCart_1 = require("../utils/DBCart");
 const Factory_1 = require("../utils/Factory");
 //@ts-ignore
@@ -33,21 +33,9 @@ exports.finalizarCompra = (req, res) => {
     let user = req.params.idUser;
     let DB = new DBCart_1.DBCart();
     DB.buscando(user).then((data) => {
-        console.log(data);
-        let productos = ``;
-        let precio_total = 0;
-        for (const p of data[0].productos) {
-            precio_total += p.price;
-            let aux = `producto ${p.title} cantidad ${p.cantidad}`;
-            productos += aux;
-        }
-        let detalle_compra = {
-            fecha: new Date(),
-            user: user,
-            productos: productos,
-            total: precio_total
-        };
-        notificacion_1.notificacionCompra(detalle_compra);
+        console.log("Por enviar notificacion...");
+        emailHandler_1.notificacionPorEmailCompraAUsuario(user, data[0]);
+        emailHandler_1.notificacionPorEmailCompraAAdmin(data[0]);
         res.json(data);
     });
 };
@@ -91,9 +79,14 @@ exports.borrarProductoDelCarrito = (req, res) => {
     @params idProd => query
     elimina del carrito del idUser el producto idProd
     */
-    if (req.query.idProd) {
+    if (req.query.idProd && req.params.idUser) {
+        let { idUser } = req.params;
+        let { idProd } = req.query;
         console.log(`Elimina del carrito del usuario ${req.params.idUser} el producto ${req.query.idProd}`);
-        res.json({ data: "ok" });
+        let DB = new DBCart_1.DBCart();
+        DB.borrarProductoCartUser(idUser, idProd).then((data) => {
+            res.json({ data });
+        });
     }
     else {
         res.json({ error: "No hay id prod" });

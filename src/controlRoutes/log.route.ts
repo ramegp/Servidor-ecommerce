@@ -48,8 +48,8 @@ export const inicioSesion = (req: express.Request, res: express.Response) => {
 
 
                     avisoInicioSesionEmail(user[0]);
-                    avisoInicioSesionSMS(user[0]);
-                    avisoInicioSesionWhatsapp(user[0]);
+                    //avisoInicioSesionSMS(user[0]);
+                    //avisoInicioSesionWhatsapp(user[0]);
 
                     res.header("x-auth-token", token).json({
                         username: user[0].user,

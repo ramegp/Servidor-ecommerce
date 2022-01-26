@@ -1,3 +1,4 @@
+import { notificacionPorEmailCompraAAdmin, notificacionPorEmailCompraAUsuario } from "../helpers/emailHandler";
 import { notificacionCompra } from "../helpers/notificacion";
 import { DBCart } from "../utils/DBCart";
 import { DBMongo } from "../utils/DBMongo";
@@ -38,23 +39,11 @@ export const finalizarCompra = (req: express.Request, res: express.Response)=>{
 
     let DB = new DBCart()
     DB.buscando(user).then((data:any)=>{
-        console.log(data);
         
-        let productos = ``;
-        let precio_total = 0
-        for (const p of data[0].productos) {
-            precio_total += p.price;
-            let aux = `producto ${p.title} cantidad ${p.cantidad}`;
-            productos += aux;
-        }
-
-        let detalle_compra = {
-            fecha: new Date(),
-            user:user,
-            productos:productos,
-            total:precio_total
-        }
-        notificacionCompra(detalle_compra)
+        console.log("Por enviar notificacion...");
+        
+        notificacionPorEmailCompraAUsuario(user,data[0]);
+        notificacionPorEmailCompraAAdmin(data[0])
         res.json(data)
     })
     
@@ -113,9 +102,17 @@ export const borrarProductoDelCarrito = (req: express.Request, res: express.Resp
     @params idProd => query
     elimina del carrito del idUser el producto idProd
     */
-    if (req.query.idProd) {
+    if (req.query.idProd && req.params.idUser) {
+        let { idUser } = req.params
+        
+        let { idProd } = req.query
+        
         console.log(`Elimina del carrito del usuario ${req.params.idUser} el producto ${req.query.idProd}`);
-        res.json({data:"ok"})
+        let DB = new DBCart();
+        DB.borrarProductoCartUser(idUser,idProd).then((data)=>{
+            res.json({data})
+        })
+        
         
     } else {
         res.json({error:"No hay id prod"})

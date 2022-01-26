@@ -5,6 +5,7 @@ const logHandler_1 = require("../helpers/logHandler");
 const express_graphql_1 = require("express-graphql");
 const graphql_1 = require("../graphql/graphql");
 const DBMongo_1 = require("./DBMongo");
+const config_1 = require("../config");
 class ApiBackend {
     constructor(port, modo_servidor) {
         //Servidor modo cluster
@@ -33,11 +34,13 @@ class ApiBackend {
         //middlewate de
         this.compression = require('compression');
         this.inicializar = (port) => {
-            this.app.use('/graphql', express_graphql_1.graphqlHTTP({
-                schema: graphql_1.schema,
-                rootValue: graphql_1.root,
-                graphiql: true
-            }));
+            if (config_1.config.GRAPHIQL == 'true') {
+                this.app.use('/graphql', express_graphql_1.graphqlHTTP({
+                    schema: graphql_1.schema,
+                    rootValue: graphql_1.root,
+                    graphiql: true
+                }));
+            }
             var env = require('node-env-file'); // .env file
             env(__dirname + '/../../.env');
             this.port = port;

@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const emailHandler_1 = require("../helpers/emailHandler");
 const logHandler_1 = require("../helpers/logHandler");
-const twilioHandler_1 = require("../helpers/twilioHandler");
 const DBMongo_1 = require("../utils/DBMongo");
 const bCrypt = require("bcrypt");
 const log_1 = require("../middleware/log");
@@ -37,8 +36,8 @@ exports.inicioSesion = (req, res) => {
                     const token = log_1.generateAuthToken(user.user);
                     logHandler_1.loggerInfo.info(`Usuario ${user[0].user} inicio sesion ${(new Date).toDateString()}`);
                     emailHandler_1.avisoInicioSesionEmail(user[0]);
-                    twilioHandler_1.avisoInicioSesionSMS(user[0]);
-                    twilioHandler_1.avisoInicioSesionWhatsapp(user[0]);
+                    //avisoInicioSesionSMS(user[0]);
+                    //avisoInicioSesionWhatsapp(user[0]);
                     res.header("x-auth-token", token).json({
                         username: user[0].user,
                         token
