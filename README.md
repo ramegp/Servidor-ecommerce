@@ -88,7 +88,7 @@ o en el entorno produccion
 
 # Servidor subido a heroku
 ```
-Link a heroku
+https://sheltered-shore-33386.herokuapp.com/
 ```
 
 # Front que se conecta con el front subido a netlify
